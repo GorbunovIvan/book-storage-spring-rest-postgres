@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--SPRING BOOT DOES NOT SEE THIS FILE, I DON'T KNOW WHY-->
+<Configuration name="BookStorageSpringRestPostgresApplication" status="INFO" monitorInterval="5">
+    <Appenders>
+        <!-- Console -->
+        <Console name="Console">
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/> <!--formatting-->
+        </Console>
+        <!-- File -->
+        <File name="File" fileName="D:\Java\book-storage-log-file.xml"> <!--path to file-->
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/> <!--formatting-->
+        </File>
+    </Appenders>
+    <Loggers>
+        <!-- level - will show this and more severe levels -->
+        <Logger name="com.example" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
