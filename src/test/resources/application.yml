@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:book-storage-testdb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+  sql:
+    init:
+      platform: h2
+      data-locations: classpath:data.sql
+  flyway:
+    enabled: false
+
+api:
+  version:
+    books: v1
+    authors: v1
+    genres: v1
+
