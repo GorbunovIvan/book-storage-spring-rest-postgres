@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.Author;
 import com.example.service.AuthorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +34,13 @@ public class AuthorController {
     @PostMapping
     public ResponseEntity<Author> create(@RequestBody Author author) {
         var authorPersisted = authorService.create(author);
-        return ResponseEntity.ok(authorPersisted);
+        return new ResponseEntity<>(authorPersisted, HttpStatusCode.valueOf(202));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Author> update(@PathVariable int id, @RequestBody Author author) {
         var authorUpdated = authorService.update(id, author);
-        return ResponseEntity.ok(authorUpdated);
+        return new ResponseEntity<>(authorUpdated, HttpStatusCode.valueOf(202));
     }
 
     @DeleteMapping("/{id}")

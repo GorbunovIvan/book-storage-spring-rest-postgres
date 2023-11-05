@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.Genre;
 import com.example.service.GenreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class GenreController {
     @PostMapping
     public ResponseEntity<Genre> create(@RequestBody Genre genre) {
         var genrePersisted = genreService.create(genre);
-        return ResponseEntity.ok(genrePersisted);
+        return new ResponseEntity<>(genrePersisted, HttpStatusCode.valueOf(202));
     }
 
     @DeleteMapping("/{name}")

@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.Book;
 import com.example.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +34,13 @@ public class BookController {
     @PostMapping
     public ResponseEntity<Book> create(@RequestBody Book book) {
         var bookPersisted = bookService.create(book);
-        return ResponseEntity.ok(bookPersisted);
+        return new ResponseEntity<>(bookPersisted, HttpStatusCode.valueOf(202));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> update(@PathVariable int id, @RequestBody Book book) {
         var bookUpdated = bookService.update(id, book);
-        return ResponseEntity.ok(bookUpdated);
+        return new ResponseEntity<>(bookUpdated, HttpStatusCode.valueOf(202));
     }
 
     @DeleteMapping("/{id}")
