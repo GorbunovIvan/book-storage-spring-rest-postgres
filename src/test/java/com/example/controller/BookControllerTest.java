@@ -3,9 +3,12 @@ package com.example.controller;
 import com.example.model.Author;
 import com.example.model.Book;
 import com.example.model.Genre;
+import com.example.model.security.Role;
+import com.example.security.JwtTokenProvider;
 import com.example.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +56,15 @@ class BookControllerTest {
 
     private final JavaTimeModule javaTimeModule = new JavaTimeModule();
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    private String jwtToken;
+
+    @PostConstruct
+    public void init() {
+        this.jwtToken = jwtTokenProvider.createToken("test", List.of(Role.USER));
+    }
+
     @BeforeEach
     public void setUp() {
         baseURI = "/api/" + version + "/books";
@@ -65,6 +77,7 @@ class BookControllerTest {
         var books = bookService.getAll();
 
         var jsonResponse = mvc.perform(MockMvcRequestBuilders.get(baseURI)
+                                .header("Authorization", jwtToken)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -88,6 +101,7 @@ class BookControllerTest {
         for (var book : books) {
 
             String jsonResponse = mvc.perform(MockMvcRequestBuilders.get(baseURI + "/{id}", book.getId())
+                                        .header("Authorization", jwtToken)
                                         .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -105,6 +119,7 @@ class BookControllerTest {
         }
 
         mvc.perform(MockMvcRequestBuilders.get(baseURI + "/{id}", -1)
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -129,6 +144,7 @@ class BookControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(newBook);
 
         String jsonResponse = mvc.perform(MockMvcRequestBuilders.post(baseURI)
+                                    .header("Authorization", jwtToken)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(jsonRequest))
                             .andExpect(status().isAccepted())
@@ -186,6 +202,7 @@ class BookControllerTest {
             String jsonRequest = objectMapper.writeValueAsString(book);
 
             String jsonResponse = mvc.perform(MockMvcRequestBuilders.put(baseURI + "/{id}", book.getId())
+                            .header("Authorization", jwtToken)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(jsonRequest))
                         .andExpect(status().isAccepted())
@@ -214,6 +231,7 @@ class BookControllerTest {
 
         String jsonRequest = objectMapper.writeValueAsString(new Book());
         mvc.perform(MockMvcRequestBuilders.put(baseURI + "/{id}", -1)
+                    .header("Authorization", jwtToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonRequest))
                 .andExpect(status().isNotFound());
@@ -229,6 +247,7 @@ class BookControllerTest {
             String jsonRequest = objectMapper.writeValueAsString(book);
 
             mvc.perform(MockMvcRequestBuilders.delete(baseURI + "/{id}", book.getId())
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                     .andExpect(status().isOk());
@@ -237,6 +256,15 @@ class BookControllerTest {
 
             verify(bookService, times(1)).deleteById(book.getId());
         }
+    }
+
+    @Test
+    void testJWTAuthorization() throws Exception {
+
+        // No token
+        mvc.perform(MockMvcRequestBuilders.get(baseURI)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     private List<Author> getAuthorsOfBooks(List<Book> books) {

@@ -28,3 +28,5 @@ INSERT INTO book_genres (book_id, genre_name) VALUES (2, 'modern');
 INSERT INTO book_genres (book_id, genre_name) VALUES (3, 'sport');
 INSERT INTO book_genres (book_id, genre_name) VALUES (4, 'futurism');
 INSERT INTO book_genres (book_id, genre_name) VALUES (4, 'sport');
+
+INSERT INTO users (username, password, role, is_active) VALUES ('test', '$2a$08$yrIfAY9sKWCkMv2TbREFbeNmxtdVYIVoc.pE9A9N97Ve4JQwa6Jta', 'USER', TRUE);

@@ -1,10 +1,8 @@
 package com.example.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 
-@RequiredArgsConstructor
 @Getter
 public class RuntimeExceptionWithHTTPCode extends RuntimeException {
 

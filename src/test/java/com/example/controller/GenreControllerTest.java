@@ -1,9 +1,12 @@
 package com.example.controller;
 
 import com.example.model.Genre;
+import com.example.model.security.Role;
+import com.example.security.JwtTokenProvider;
 import com.example.service.GenreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,15 @@ class GenreControllerTest {
 
     private final JavaTimeModule javaTimeModule = new JavaTimeModule();
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    private String jwtToken;
+
+    @PostConstruct
+    public void init() {
+        this.jwtToken = jwtTokenProvider.createToken("test", List.of(Role.USER));
+    }
+
     @BeforeEach
     public void setUp() {
         baseURI = "/api/" + version + "/genres";
@@ -61,6 +73,7 @@ class GenreControllerTest {
         var genres = genreService.getAll();
 
         var jsonResponse = mvc.perform(MockMvcRequestBuilders.get(baseURI)
+                                .header("Authorization", jwtToken)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -84,6 +97,7 @@ class GenreControllerTest {
         for (var genre : genres) {
 
             String jsonResponse = mvc.perform(MockMvcRequestBuilders.get(baseURI + "/{name}", genre.getName())
+                                        .header("Authorization", jwtToken)
                                         .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -99,6 +113,7 @@ class GenreControllerTest {
         }
 
         mvc.perform(MockMvcRequestBuilders.get(baseURI + "/{name}", "-")
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -111,6 +126,7 @@ class GenreControllerTest {
         String jsonRequest = objectMapper.writeValueAsString(newGenre);
 
         String jsonResponse = mvc.perform(MockMvcRequestBuilders.post(baseURI)
+                                    .header("Authorization", jwtToken)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(jsonRequest))
                             .andExpect(status().isAccepted())
@@ -138,6 +154,7 @@ class GenreControllerTest {
             String jsonRequest = objectMapper.writeValueAsString(genre);
 
             mvc.perform(MockMvcRequestBuilders.delete(baseURI + "/{name}", genre.getName())
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                     .andExpect(status().isOk());
@@ -146,5 +163,14 @@ class GenreControllerTest {
 
             verify(genreService, times(1)).deleteByName(genre.getName());
         }
+    }
+    
+    @Test
+    void testJWTAuthorization() throws Exception {
+
+        // No token
+        mvc.perform(MockMvcRequestBuilders.get(baseURI)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 }

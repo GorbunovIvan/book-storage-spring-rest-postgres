@@ -10,3 +10,9 @@ spring:
       ddl-auto: update
     open-in-view: false
 
+security:
+  jwt:
+    requestHeader: Authorization
+    secretKey: mySecretKey-mySecretKey-mySecretKey
+    validity: 3600
+
