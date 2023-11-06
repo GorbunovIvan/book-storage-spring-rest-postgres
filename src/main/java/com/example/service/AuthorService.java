@@ -42,15 +42,6 @@ public class AuthorService {
     }
 
     public void deleteById(Integer id) {
-        var authorOpt = authorRepository.findById(id);
-        if (authorOpt.isEmpty()) {
-            return;
-        }
-        var author = authorOpt.get();
-        delete(author);
-    }
-
-    public void delete(Author author) {
-        authorRepository.deleteInACascade(author);
+        authorRepository.deleteByIdInACascade(id);
     }
 }

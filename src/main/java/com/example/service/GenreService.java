@@ -27,15 +27,6 @@ public class GenreService {
     }
 
     public void deleteByName(String name) {
-        var genreOpt = genreRepository.findByName(name);
-        if (genreOpt.isEmpty()) {
-            return;
-        }
-        var genre = genreOpt.get();
-        delete(genre);
-    }
-
-    public void delete(Genre genre) {
-        genreRepository.deleteInACascade(genre);
+        genreRepository.deleteByNameInACascade(name);
     }
 }

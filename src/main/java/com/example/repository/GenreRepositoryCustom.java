@@ -6,5 +6,5 @@ import java.util.Set;
 
 public interface GenreRepositoryCustom {
     void mergeAll(Set<Genre> genres);
-    void deleteInACascade(Genre genre);
+    void deleteByNameInACascade(String name);
 }

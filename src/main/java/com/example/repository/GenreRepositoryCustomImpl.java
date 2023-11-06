@@ -41,10 +41,15 @@ public class GenreRepositoryCustomImpl implements GenreRepositoryCustom {
 
     @Transactional
     @Override
-    public void deleteInACascade(Genre genre) {
+    public void deleteByNameInACascade(String name) {
+
+        var genre = entityManager.find(Genre.class, name);
+        if (genre == null) {
+            return;
+        }
 
         Query query = entityManager.createNativeQuery("DELETE FROM book_genres WHERE genre_name = :name");
-        query.setParameter("name", genre.getName());
+        query.setParameter("name", name);
         query.executeUpdate();
 
         entityManager.remove(genre);

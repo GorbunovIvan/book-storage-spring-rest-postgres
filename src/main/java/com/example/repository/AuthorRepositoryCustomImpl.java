@@ -46,10 +46,15 @@ public class AuthorRepositoryCustomImpl implements AuthorRepositoryCustom {
 
     @Transactional
     @Override
-    public void deleteInACascade(Author author) {
+    public void deleteByIdInACascade(Integer id) {
+
+        var author = entityManager.find(Author.class, id);
+        if (author == null) {
+            return;
+        }
 
         Query query = entityManager.createNativeQuery("DELETE FROM book_authors WHERE author_id = :id");
-        query.setParameter("id", author.getId());
+        query.setParameter("id", id);
         query.executeUpdate();
 
         entityManager.remove(author);

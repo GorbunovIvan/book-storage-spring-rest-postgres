@@ -6,5 +6,5 @@ import java.util.Set;
 
 public interface AuthorRepositoryCustom {
     void mergeAll(Set<Author> authors);
-    void deleteInACascade(Author author);
+    void deleteByIdInACascade(Integer id);
 }
