@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/book-storage-spring-rest-postgres
+#    url: jdbc:postgresql://localhost:5432/book-storage-spring-rest-postgres
+    url: jdbc:postgresql://postgres-db:5432/book-storage-spring-rest-postgres
     username: postgres
     password: root
 
